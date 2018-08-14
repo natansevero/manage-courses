@@ -13,7 +13,7 @@ module.exports = app => {
 
         getOneByNome: async nome => {
             return await Aluno.findOne({
-                nome
+                nome: nome
             })
         },
 
