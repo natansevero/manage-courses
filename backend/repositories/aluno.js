@@ -11,9 +11,12 @@ module.exports = app => {
             return await Aluno.find({})
         },
 
-        getOneByNome: async nome => {
-            return await Aluno.findOne({
-                nome: nome
+        getByNome: async nome => {
+            let regexp = new RegExp(`^${nome}`, 'i')
+            return await Aluno.find({
+                nome: {
+                    $regex: regexp
+                }
             })
         },
 

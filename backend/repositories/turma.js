@@ -1,5 +1,5 @@
 module.exports = app => {
-    let Turma = app.models.turma
+    const Turma = app.models.turma
 
     let repository = {
         create: async data => {

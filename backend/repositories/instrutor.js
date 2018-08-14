@@ -1,5 +1,5 @@
 module.exports = app => {
-    let Instrutor = app.models.Instrutor
+    const Instrutor = app.models.Instrutor
 
     let repository = {
         create: async data => {

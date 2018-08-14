@@ -1,5 +1,5 @@
 module.exports = app => {
-    let Curso = app.models.curso
+    const Curso = app.models.curso
 
     let repository = {
         create: async data => {
@@ -11,9 +11,12 @@ module.exports = app => {
             return await Curso.find({})
         },
         
-        getOneByNome: async nome => {
-            return await Curso.findOne({
-                nome
+        getByNome: async nome => {
+            let regexp = new RegExp(`^${nome}`, 'i')
+            return await Curso.find({
+                nome: {
+                    $regex: regexp
+                }
             })
         },
 

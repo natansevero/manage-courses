@@ -25,7 +25,7 @@ module.exports = app => {
             try {
                 if(req.query.hasOwnProperty('nome')) {
                     let nome = req.query.nome;
-                    let aluno = await alunoRepository.getOneByNome(nome);
+                    let aluno = await alunoRepository.getByNome(nome);
                     res.status(200).json(aluno)
                 } else {
                     let alunos = await alunoRepository.getAll()
@@ -39,7 +39,7 @@ module.exports = app => {
         put: async (req, res) => {
             try {
                 let id = req.params.id
-                let aluno = req.body.aluno
+                let aluno = req.body
                 await alunoRepository.update(id, aluno)
                 res.status(201).json({ message: 'Aluno atualizado com sucesso' })
             } catch(e) {
