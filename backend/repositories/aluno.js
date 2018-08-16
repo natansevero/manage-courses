@@ -30,7 +30,7 @@ module.exports = app => {
         },
 
         delete: async id => {
-            return await Aluno.findOneAndRemove(id)
+            return await Aluno.findByIdAndRemove(id)
         }
     }
 

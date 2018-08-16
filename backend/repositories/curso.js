@@ -29,7 +29,7 @@ module.exports = app => {
         },
 
         delete: async id => {
-            return await Curso.findOneAndRemove(id)
+            return await Curso.findByIdAndRemove(id)
         }
     }
 

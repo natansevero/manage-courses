@@ -1,5 +1,5 @@
 module.exports = app => {
-    const Instrutor = app.models.Instrutor
+    const Instrutor = app.models.instrutor
 
     let repository = {
         create: async data => {
@@ -11,9 +11,12 @@ module.exports = app => {
             return await Instrutor.find({})
         },
 
-        getOneByNome: async nome => {
-            return await Instrutor.findOne({
-                nome
+        getByNome: async nome => {
+            let regexp = new RegExp(`^${nome}`, 'i')
+            return await Instrutor.find({
+                nome: {
+                    $regex: regexp
+                }
             })
         },
 
@@ -27,7 +30,7 @@ module.exports = app => {
         },
 
         delete: async id => {
-            return await Instrutor.findOneAndRemove(id)
+            return await Instrutor.findByIdAndRemove(id)
         }
     }
 
