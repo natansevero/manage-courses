@@ -4,6 +4,7 @@ const Schema = mongoose.Schema
 module.exports = app => {
 
     const turmaSchema = new Schema({
+        nome: { type: String, required: true },
         alunos: [{ 
             type: Schema.Types.ObjectId,
             ref: 'alunos' 

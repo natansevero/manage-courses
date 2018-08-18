@@ -7,13 +7,27 @@ module.exports = app => {
             await turma.save()
         },
 
-        getAll: async () => {
-            return await Turma.find({})
+        get: async (query) => {
+            let find = {}
+            query.hasOwnProperty('nome') ? find['nome'] = query.nome : find = {}
+
+            delete query['nome']
+            let queryToWhere = query
+
+            return await Turma.find(find)
                 .populate('alunos', 'nome')
                 .populate('cursos.curso', 'nome')    
-                .populate('cursos.instrutor', 'nome')    
+                .populate('cursos.instrutor', 'nome')
+                .where(queryToWhere)    
         }
     }
 
     return repository
 }
+
+// let regexp = new RegExp(`^${nome}`, 'i')
+//             return await Instrutor.find({
+//                 nome: {
+//                     $regex: regexp
+//                 }
+//             })
