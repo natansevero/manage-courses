@@ -12,13 +12,27 @@ module.exports = app => {
             query.hasOwnProperty('nome') ? find['nome'] = query.nome : find = {}
 
             delete query['nome']
-            let queryToWhere = query
 
-            return await Turma.find(find)
-                .populate('alunos', 'nome')
-                .populate('cursos.curso', 'nome')    
-                .populate('cursos.instrutor', 'nome')
-                .where(queryToWhere)    
+            let queryToOr = []
+            
+            query.hasOwnProperty('curso') ? queryToOr.push({ 'cursos.curso.nome': { $eq: query['curso'] } }) : []
+            
+            // query.hasOwnProperty('instrutor') ? queryToOr.push({ 'cursos.instrutor.nome': query['instrutor'] }) : []
+
+            console.log(queryToOr)
+
+            return await Turma.find({})
+                .populate({ path: 'alunos', select: 'nome' })
+                .populate({ 
+                    path: 'cursos.curso', 
+                    select: 'nome', 
+                    match: { $or: [
+                        { nome: query['curso']  },
+                        { nome: { $regex: /([A-Z a-z])\w+/g }  }  
+                    ] }  
+                })
+                .populate({ path: 'cursos.instrutor', select: 'nome' })
+                   
         }
     }
 
