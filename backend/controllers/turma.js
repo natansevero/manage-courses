@@ -18,11 +18,9 @@ module.exports = app => {
                 for(let key in req.query) {
                     myQuery[key] = req.query[key]
                 }
-                console.log(myQuery)
 
                 let turmas = await turmaRepository.get(myQuery)
                 res.status(200).json(turmas)
-                // res.status(200).json({})
             } catch(e) {
                 res.status(500).json({ message: 'Falha ao processar requisição', error: e.message })
             }
