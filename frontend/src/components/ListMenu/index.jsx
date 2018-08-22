@@ -8,7 +8,9 @@ import Divider from '@material-ui/core/Divider';
 export default props => (
     <List component='nav'>
         <ListItem button>
-            <ListItemText primary='Alunos' />
+            <a href="">
+                <ListItemText primary='Alunos' />
+            </a>
         </ListItem>
         <Divider />
         <ListItem button>

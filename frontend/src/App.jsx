@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 
+import './index.css'
+
 import { withStyles } from '@material-ui/core/styles'
 
 import Header from './components/Header'
 import SideMenu from './components/SideMenu'
-import Content from './components/Content'
+import Routes from './Routes'
 
 const styles = theme => ({
   root: {
@@ -24,7 +26,7 @@ class App extends Component {
       <div className={classes.root}>
         <Header />
         <SideMenu />
-        <Content />
+        <Routes />
       </div>
     );
   }
