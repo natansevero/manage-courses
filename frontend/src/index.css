@@ -10,3 +10,7 @@ footer {
   background-color: red;
   margin-top: 10px;
 }
+
+.item-menu {
+  text-decoration: none;
+}

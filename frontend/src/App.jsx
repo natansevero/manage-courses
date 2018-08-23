@@ -4,7 +4,7 @@ import './index.css'
 
 import { withStyles } from '@material-ui/core/styles'
 
-import Header from './components/Header'
+import Nav from './components/Nav'
 import SideMenu from './components/SideMenu'
 import Routes from './Routes'
 
@@ -24,7 +24,7 @@ class App extends Component {
     const { classes } = this.props
     return (
       <div className={classes.root}>
-        <Header />
+        <Nav />
         <SideMenu />
         <Routes />
       </div>
