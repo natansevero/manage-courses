@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 
-import { DatePicker } from 'material-ui-pickers';
-
 import { withStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
 import TextField from '@material-ui/core/TextField';
@@ -34,8 +32,8 @@ const styles = theme => ({
         width: '100%',
         backgroundColor: theme.palette.background.paper,
     },
-    itemList : {
-        display: 'flex', 
+    itemList: {
+        display: 'flex',
         alignItems: 'center',
     },
     editButton: {
@@ -58,30 +56,71 @@ const API_URI = 'http://localhost:3000/api'
 
 class Aluno extends Component {
     state = {
+        _id: '',
         nome: '',
-        data_nasc: new Date(),
-        alunos: []
+        data_nasc: '',
+        alunos: [],
+        isEditing: false
     }
 
     componentWillMount() {
+        this.handleList()
+    }
+
+    handleList() {
         axios.get(`${API_URI}/alunos`)
-            .then(res =>  { 
+            .then(res => {
                 this.setState({ ...this.state, alunos: res.data })
             })
             .catch(err => console.log(err))
     }
 
-    handleDateChange = (date) => {
-        this.setState({ data_nasc: date })
-    }
-
-    handleSubmit(e) {
-        e.preventDefault();
+    handleAdd(e) {
         let aluno = {
             nome: this.state.nome,
             data_nasc: this.state.data_nasc
         }
-        console.log(aluno)
+
+        axios.post(`${API_URI}/alunos`, aluno)
+            .then(res => this.handleList())
+            .catch(err => alert('Falha ao cadastrar o aluno :('))
+
+        this.handleList.bind(this)
+    }
+
+    handleUpdate() {
+        axios.put(`${API_URI}/alunos/${this.state._id}`, {
+            nome: this.state.nome,
+            data_nasc: this.state.data_nasc
+        })
+        .then(res =>  { 
+            this.handleList()
+            this.setState({
+                ...this.state,
+                _id: '',
+                nome: '',
+                data_nasc: '',
+                isEditing: !this.state.isEditing
+            }) 
+        })
+        .catch(err => alert('Falha ao editar aluno'))
+    }
+
+    toggleEdit(aluno) {
+        this.setState(
+            { 
+                ...this.state, 
+                isEditing: !this.state.isEditing,
+                _id: aluno._id,
+                nome: aluno.nome,
+                data_nasc: aluno.data_nasc 
+            })
+    }
+
+    handleDelete(id_aluno) {
+        axios.delete(`${API_URI}/alunos/${id_aluno}`)
+            .then(res => this.handleList())
+            .catch(err => alert('Falha ao remover aluno :('))
     }
 
     render() {
@@ -91,56 +130,56 @@ class Aluno extends Component {
                 <div className={classes.toolbar} />
                 <Header title='Alunos' />
 
-                <form onSubmit={this.handleSubmit.bind(this)}>
-                    <Grid container spacing={16}>
-                        <Grid item md={5}>
-                            <TextField
-                                id='nome'
-                                placeholder='Nome'
-                                className={classes.textField}
-                                margin='normal'
-                                onChange={(e) => this.setState({ ...this.state, nome: e.target.value })}
-                                value={this.state.nome}
-                                fullWidth={true} />
-                        </Grid>
-                        <Grid item md={5}>
-                            {/* <TextField
-                                id='data_nasc'
-                                type='date'
-                                placeholder='Data de Nascimento'
-                                className={classes.textField}
-                                onChange={(e) => this.setState({ ...this.state, data_nasc: e.target.value })}
-                                value={this.state.data_nasc}
-                                margin='normal'
-                                fullWidth={true} /> */}
 
-                            <DatePicker 
-                                keyboard={true}
-                                format='DD/MM/YYYY'
-                                mask={value => (value ? [/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/] : [])}
-                                value={this.state.data_nasc}
-                                onChange={this.handleDateChange}
-                                disableOpenOnEnter
-                                className={classes.textField}
-                                animateYearScrolling={false}
-                                margin='normal'
-                                fullWidth={true}
-                            />
-                        </Grid>
-                        <Grid item md={2}>
+                <Grid container spacing={16}>
+                    <Grid item md={5}>
+                        <TextField
+                            id='nome'
+                            placeholder='Nome'
+                            className={classes.textField}
+                            margin='normal'
+                            onChange={(e) => this.setState({ ...this.state, nome: e.target.value })}
+                            value={this.state.nome}
+                            fullWidth={true} />
+                    </Grid>
+                    <Grid item md={5}>
+                        <TextField
+                            id='data_nasc'
+                            placeholder='Data de Nascimento'
+                            className={classes.textField}
+                            onChange={(e) => this.setState({ ...this.state, data_nasc: e.target.value })}
+                            value={this.state.data_nasc}
+                            margin='normal'
+                            fullWidth={true} />
+                    </Grid>
+                    <Grid item md={2}>
+                        {this.state.isEditing ?
                             <Button
                                 size='large'
                                 type='submit'
                                 fullWidth={true}
                                 variant='contained'
+                                className={classes.editButton}
+                                onClick={this.handleUpdate.bind(this)}
+                            >
+                                Editar
+                                </Button>
+                            :
+                            <Button
+                                size='large'
+                                type='button'
+                                fullWidth={true}
+                                variant='contained'
                                 color='primary'
                                 className={classes.button}
+                                onClick={this.handleAdd.bind(this)}
                             >
                                 Cadastrar
-                            </Button>
-                        </Grid>
+                                </Button>
+                        }
                     </Grid>
-                </form>
+                </Grid>
+
 
                 <List component='nav' className={classes.list}>
                     {this.state.alunos.map(aluno => (
@@ -153,12 +192,16 @@ class Aluno extends Component {
                                     <ListItemText>{aluno.data_nasc}</ListItemText>
                                 </Grid>
                                 <Grid item md={1}>
-                                    <IconButton className={classes.editButton}>
+                                    <IconButton 
+                                        onClick={() => this.toggleEdit(aluno)} 
+                                        className={classes.editButton}>
                                         <Icon>edit_icon</Icon>
                                     </IconButton>
                                 </Grid>
                                 <Grid item md={1}>
-                                    <IconButton className={classes.deleteButton}>
+                                    <IconButton
+                                        onClick={() => this.handleDelete(aluno._id)}
+                                        className={classes.deleteButton}>
                                         <Icon>delete_icon</Icon>
                                     </IconButton>
                                 </Grid>

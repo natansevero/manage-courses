@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 
 import './index.css'
 
-import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider'
-import DateFnsUtils from 'material-ui-pickers/utils/date-fns-utils';
-
 import { withStyles } from '@material-ui/core/styles'
 
 import Nav from './components/Nav'
@@ -20,12 +17,10 @@ class App extends Component {
   render() {
     const { classes } = this.props
     return (
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <div className={classes.root}>
-          <Nav />
-          <Routes />
-        </div>
-      </MuiPickersUtilsProvider>
+      <div className={classes.root}>
+        <Nav />
+        <Routes />
+      </div>
     );
   }
 }
