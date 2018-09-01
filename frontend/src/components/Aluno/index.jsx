@@ -2,18 +2,12 @@ import React, { Component } from 'react'
 import axios from 'axios'
 
 import { withStyles } from '@material-ui/core/styles'
-import Grid from '@material-ui/core/Grid'
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Icon from '@material-ui/core/Icon';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import red from '@material-ui/core/colors/red';
 import orange from '@material-ui/core/colors/orange';
 
 import Header from '../Header'
+import AlunoForm from './AlunoForm'
+import AlunoList from './AlunoList'
 
 const styles = theme => ({
     toolbar: theme.mixins.toolbar,
@@ -58,7 +52,7 @@ class Aluno extends Component {
     state = {
         _id: '',
         nome: '',
-        data_nasc: '',
+        dataNasc: '',
         alunos: [],
         isEditing: false
     }
@@ -75,46 +69,56 @@ class Aluno extends Component {
             .catch(err => console.log(err))
     }
 
+    handleChangeNome(e) {
+        this.setState({ ...this.state, nome: e.target.value })
+    }
+
+    handleChangeDataNasc(e) {
+        this.setState({ ...this.state, dataNasc: e.target.value })
+    }
+
     handleAdd(e) {
         let aluno = {
             nome: this.state.nome,
-            data_nasc: this.state.data_nasc
+            data_nasc: this.state.dataNasc
         }
 
         axios.post(`${API_URI}/alunos`, aluno)
-            .then(res => this.handleList())
+            .then(res => {
+                this.setState({ ...this.state, dataNasc: '', nome: '' })
+                this.handleList()
+            })
             .catch(err => alert('Falha ao cadastrar o aluno :('))
-
-        this.handleList.bind(this)
     }
 
     handleUpdate() {
         axios.put(`${API_URI}/alunos/${this.state._id}`, {
             nome: this.state.nome,
-            data_nasc: this.state.data_nasc
+            dataNasc: this.state.dataNasc
         })
-        .then(res =>  { 
-            this.handleList()
-            this.setState({
-                ...this.state,
-                _id: '',
-                nome: '',
-                data_nasc: '',
-                isEditing: !this.state.isEditing
-            }) 
-        })
-        .catch(err => alert('Falha ao editar aluno'))
+            .then(res => {
+                this.handleList()
+                this.setState({
+                    ...this.state,
+                    _id: '',
+                    nome: '',
+                    dataNasc: '',
+                    isEditing: !this.state.isEditing
+                })
+            })
+            .catch(err => alert('Falha ao editar aluno'))
     }
 
     toggleEdit(aluno) {
         this.setState(
-            { 
-                ...this.state, 
+            {
+                ...this.state,
                 isEditing: !this.state.isEditing,
                 _id: aluno._id,
                 nome: aluno.nome,
-                data_nasc: aluno.data_nasc 
-            })
+                dataNasc: aluno.dataNasc
+            }
+        )
     }
 
     handleDelete(id_aluno) {
@@ -130,86 +134,21 @@ class Aluno extends Component {
                 <div className={classes.toolbar} />
                 <Header title='Alunos' />
 
+                <AlunoForm
+                    classes={classes}
+                    nome={this.state.nome}
+                    dataNasc={this.state.dataNasc}
+                    isEditing={this.state.isEditing}
+                    handleChangeNome={this.handleChangeNome.bind(this)}
+                    handleChangeDataNasc={this.handleChangeDataNasc.bind(this)}
+                    handleAdd={this.handleAdd.bind(this)}
+                    handleUpdate={this.handleUpdate.bind(this)} />
 
-                <Grid container spacing={16}>
-                    <Grid item md={5}>
-                        <TextField
-                            id='nome'
-                            placeholder='Nome'
-                            className={classes.textField}
-                            margin='normal'
-                            onChange={(e) => this.setState({ ...this.state, nome: e.target.value })}
-                            value={this.state.nome}
-                            fullWidth={true} />
-                    </Grid>
-                    <Grid item md={5}>
-                        <TextField
-                            id='data_nasc'
-                            placeholder='Data de Nascimento'
-                            className={classes.textField}
-                            onChange={(e) => this.setState({ ...this.state, data_nasc: e.target.value })}
-                            value={this.state.data_nasc}
-                            margin='normal'
-                            fullWidth={true} />
-                    </Grid>
-                    <Grid item md={2}>
-                        {this.state.isEditing ?
-                            <Button
-                                size='large'
-                                type='submit'
-                                fullWidth={true}
-                                variant='contained'
-                                className={classes.editButton}
-                                onClick={this.handleUpdate.bind(this)}
-                            >
-                                Editar
-                                </Button>
-                            :
-                            <Button
-                                size='large'
-                                type='button'
-                                fullWidth={true}
-                                variant='contained'
-                                color='primary'
-                                className={classes.button}
-                                onClick={this.handleAdd.bind(this)}
-                            >
-                                Cadastrar
-                                </Button>
-                        }
-                    </Grid>
-                </Grid>
-
-
-                <List component='nav' className={classes.list}>
-                    {this.state.alunos.map(aluno => (
-                        <ListItem key={aluno._id} divider={true}>
-                            <Grid container spacing={16}>
-                                <Grid className={classes.itemList} item md={5}>
-                                    <ListItemText>{aluno.nome}</ListItemText>
-                                </Grid>
-                                <Grid className={classes.itemList} item md={5}>
-                                    <ListItemText>{aluno.data_nasc}</ListItemText>
-                                </Grid>
-                                <Grid item md={1}>
-                                    <IconButton 
-                                        onClick={() => this.toggleEdit(aluno)} 
-                                        className={classes.editButton}>
-                                        <Icon>edit_icon</Icon>
-                                    </IconButton>
-                                </Grid>
-                                <Grid item md={1}>
-                                    <IconButton
-                                        onClick={() => this.handleDelete(aluno._id)}
-                                        className={classes.deleteButton}>
-                                        <Icon>delete_icon</Icon>
-                                    </IconButton>
-                                </Grid>
-                            </Grid>
-                        </ListItem>
-                    ))}
-                </List>
-
+                <AlunoList
+                    classes={classes}
+                    alunos={this.state.alunos}
+                    toggleEdit={this.toggleEdit.bind(this)}
+                    handleDelete={this.handleDelete.bind(this)} />
             </div>
         )
     }
